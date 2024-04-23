@@ -1,4 +1,4 @@
-from REST_API.routes import contact
+from REST_API.routes import contact, auth
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -7,10 +7,13 @@ from fastapi.responses import RedirectResponse
 app = FastAPI()
 
 app.include_router(contact.router, prefix='/api')
+app.include_router(auth.router, prefix='/api')
+
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Contacts API"}
+
 
 @app.get("/docs")
 def read_docs():
