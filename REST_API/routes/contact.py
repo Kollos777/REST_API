@@ -4,7 +4,7 @@ from ..database.db import get_db
 from ..repository import contact as contact_repository
 from ..schemas import Contact, ContactCreate, ContactUpdate,UserModel
 from datetime import date, timedelta
-from services.auth import Auth
+from ..services.auth import Auth
 from ..database.models import User 
 
 
