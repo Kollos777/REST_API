@@ -18,6 +18,8 @@ libgravatar = "^1.0.4"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.9"
 fastapi-mail = "^1.4.1"
+python-dotenv = "^1.0.1"
+redis = "^5.0.4"
 
 [build-system]
 requires = ["poetry-core"]

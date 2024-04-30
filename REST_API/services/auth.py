@@ -9,13 +9,17 @@ from sqlalchemy.orm import Session
 
 from REST_API.database.db import get_db
 from REST_API.repository import auth as repository_users
+from conf.config import settings
+import redis
+
 
 
 class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    SECRET_KEY = "secret_key"
-    ALGORITHM = "HS256"
+    SECRET_KEY = settings.secret_key
+    ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+    r = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
 
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)

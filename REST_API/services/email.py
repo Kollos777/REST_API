@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from conf.config import settings
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
@@ -7,11 +7,11 @@ from pydantic import EmailStr
 from REST_API.services.auth import auth_service
 
 conf = ConnectionConfig(
-    MAIL_USERNAME="kollosl@meta.ua",
-    MAIL_PASSWORD="Ko272100",
-    MAIL_FROM="kollosl@meta.ua",
-    MAIL_PORT=465,
-    MAIL_SERVER="smtp.meta.ua",
+    MAIL_USERNAME=settings.mail_username,
+    MAIL_PASSWORD=settings.mail_password,
+    MAIL_FROM=EmailStr(settings.mail_from),
+    MAIL_PORT=settings.mail_port,
+    MAIL_SERVER=settings.mail_server,
     MAIL_FROM_NAME="Desired Name",
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=True,
