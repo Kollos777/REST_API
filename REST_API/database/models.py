@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
@@ -32,3 +32,4 @@ class User(Base):
     refresh_token = Column(String(255), nullable=True)
 
     contacts = relationship("Contact", back_populates="owner")
+    confirmed = Column(Boolean, default=False)
