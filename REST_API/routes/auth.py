@@ -2,12 +2,13 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Depends, status, Security, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
-from REST_API.schemas import UserModel, UserResponse, TokenModel, RequestEmail
-from REST_API.database.db import get_db
-from REST_API.repository import auth as repository_users
-from REST_API.services.auth import auth_service
+from ..schemas import UserModel, UserResponse, TokenModel, RequestEmail
+from ..database.db import get_db
+from ..repository import auth as repository_users
+from ..services.auth import auth_service
+from ..services.email import send_email
 
-from REST_API.services.email import send_email
+
 router = APIRouter(prefix='/auth', tags=["auth"])
 security = HTTPBearer()
 
@@ -52,16 +53,6 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
     await repository_users.update_token(user, refresh_token, db)
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
-
-@router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
-    exist_user = await repository_users.get_user_by_email(body.email, db)
-    if exist_user:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
-    body.password = auth_service.get_password_hash(body.password)
-    new_user = await repository_users.create_user(body, db)
-    background_tasks.add_task(send_email, new_user.email, new_user.username, request.base_url)
-    return {"user": new_user, "detail": "User successfully created. Check your email for confirmation."}
 
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: Session = Depends(get_db)):

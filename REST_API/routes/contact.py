@@ -2,15 +2,18 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..database.db import get_db
 from ..repository import contact as contact_repository
-from ..schemas import Contact, ContactCreate, ContactUpdate,UserModel
+from ..schemas import Contact, ContactCreate, ContactUpdate, UserModel
 from datetime import date, timedelta
 from ..services.auth import Auth
-from ..database.models import User 
+from ..database.models import User
+from typing import List
+from fastapi_limiter import FastAPILimiter, RateLimiter
 
 
 router = APIRouter(prefix='/contact', tags=["contact"])
 
-@router.get("/", response_model=list[Contact])
+@router.get("/", response_model=List[Contact], description='No more than 10 requests per minute',
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))])
 async def read_contacts(
     skip: int = 0,
     limit: int = 100,
@@ -30,7 +33,7 @@ async def read_contact(
         raise HTTPException(status_code=404, detail="Contact not found")
     return db_contact
 
-@router.post("/", response_model=Contact)
+@router.post("/", response_model=Contact,dependencies=[Depends(RateLimiter(times=5, seconds=60))])
 async def create_contact(
     contact: ContactCreate,
     db: Session = Depends(get_db),
