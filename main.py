@@ -11,6 +11,7 @@ from REST_API.conf.config import settings
 
 app = FastAPI()
 
+# CORS settings
 origins = [ 
     "http://localhost:8000"
     ]
@@ -23,12 +24,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
 app.include_router(contact.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
 app.include_router(users.router, prefix='/api')
 
 @app.on_event("startup")
 async def startup():
+    """
+    Performs startup operations such as initializing Redis and setting up rate limiting.
+    """
     r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0, encoding="utf-8",
                           decode_responses=True)
     await FastAPILimiter.init(r)
@@ -36,11 +41,17 @@ async def startup():
 
 @app.get("/")
 def read_root():
+    """
+    Root endpoint to check if the API is running.
+    """
     return {"message": "Welcome to the Contacts API"}
 
 
 @app.get("/docs")
 def read_docs():
+    """
+    Redirects to the FastAPI auto-generated documentation.
+    """
     return RedirectResponse(url="/docs")
 
 
